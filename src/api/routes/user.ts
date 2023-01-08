@@ -10,7 +10,7 @@ router.get("/users", async (req, res) => {
 });
 
 router.post("/user", async (req, res) => {
-  const { email, name, age, gender } = req.body;
+  const { email, first_name, last_name, age, gender } = req.body;
   try {
     const userAlreadyExists = await prisma.user.findUnique({
       where: { email: email },
@@ -20,7 +20,8 @@ router.post("/user", async (req, res) => {
     } else {
       const user = await prisma.user.create({
         data: {
-          name,
+          first_name,
+          last_name,
           email,
           profiles: {
             create: {
@@ -28,6 +29,13 @@ router.post("/user", async (req, res) => {
               gender,
             },
           },
+        },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          profiles: true,
         },
       });
       res.status(200).json(user);
@@ -38,31 +46,42 @@ router.post("/user", async (req, res) => {
   }
 });
 
-router.patch("/user", async (req, res) => {
-  const { email, name, age, gender } = req.body;
+router.patch("/user/:id", async (req, res) => {
+  console.log(req.body);
+  const id = req.params.id;
+  const { email, first_name, last_name, age, gender } = req.body;
   try {
     const userAlreadyExists = await prisma.user.findUnique({
-      where: { email: email },
+      where: { id: id },
     });
     if (!userAlreadyExists) {
       res.status(200).send("Usuário não Cadastrado");
     } else {
       const user = await prisma.user.update({
         data: {
-          name,
+          first_name,
+          last_name,
           email,
           profiles: {
             update: {
               data: {
                 age,
+                gender,
               },
               where: {
-                userId: userAlreadyExists.id,
+                userId: id,
               },
             },
           },
         },
         where: { email: email },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          profiles: true,
+        },
       });
       res.status(200).json(user);
     }
