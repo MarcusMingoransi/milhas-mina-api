@@ -6,21 +6,22 @@ const router = express.Router();
 
 router.get("/users", async (req, res) => {
   const users = await prisma.user.findMany();
-  res.json(users);
+  return res.status(200).json(users);
 });
 
 router.post("/user", async (req, res) => {
-  const { email, name, age, gender } = req.body;
+  const { email, first_name, last_name, age, gender } = req.body;
   try {
     const userAlreadyExists = await prisma.user.findUnique({
       where: { email: email },
     });
     if (userAlreadyExists) {
-      res.status(200).send("Usuário já Cadastrado");
+      return res.status(200).send("Usuário já Cadastrado");
     } else {
       const user = await prisma.user.create({
         data: {
-          name,
+          first_name,
+          last_name,
           email,
           profiles: {
             create: {
@@ -29,45 +30,62 @@ router.post("/user", async (req, res) => {
             },
           },
         },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          profiles: true,
+        },
       });
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   } catch (error) {
-    res.status(500).end();
+    return res.status(500).end();
     return error;
   }
 });
 
-router.patch("/user", async (req, res) => {
-  const { email, name, age, gender } = req.body;
+router.patch("/user/:id", async (req, res) => {
+  const id = req.params.id;
+  const { email, first_name, last_name, age, gender } = req.body;
   try {
     const userAlreadyExists = await prisma.user.findUnique({
-      where: { email: email },
+      where: { id: id },
     });
     if (!userAlreadyExists) {
-      res.status(200).send("Usuário não Cadastrado");
+      return res.status(200).send("Usuário não Cadastrado");
     } else {
       const user = await prisma.user.update({
         data: {
-          name,
+          first_name,
+          last_name,
           email,
           profiles: {
             update: {
               data: {
                 age,
+                gender,
               },
               where: {
-                userId: userAlreadyExists.id,
+                userId: id,
               },
             },
           },
         },
         where: { email: email },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          profiles: true,
+        },
       });
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   } catch (error) {
-    res.status(500).end();
+    return res.status(500).end();
     return error;
   }
 });
@@ -79,7 +97,7 @@ router.post("/user/delete/:id", async (req, res) => {
       where: { id: id },
     });
     if (!userAlreadyExists) {
-      res.status(200).send("Usuário não Cadastrado");
+      return res.status(200).send("Usuário não Cadastrado");
     } else {
       const user = await prisma.user.update({
         data: {
@@ -87,7 +105,7 @@ router.post("/user/delete/:id", async (req, res) => {
         },
         where: { id: id },
       });
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   } catch (error) {
     res.status(500).end();
