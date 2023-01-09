@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/users", async (req, res) => {
   const users = await prisma.user.findMany();
-  res.json(users);
+  return res.status(200).json(users);
 });
 
 router.post("/user", async (req, res) => {
@@ -16,7 +16,7 @@ router.post("/user", async (req, res) => {
       where: { email: email },
     });
     if (userAlreadyExists) {
-      res.status(200).send("Usuário já Cadastrado");
+      return res.status(200).send("Usuário já Cadastrado");
     } else {
       const user = await prisma.user.create({
         data: {
@@ -38,16 +38,15 @@ router.post("/user", async (req, res) => {
           profiles: true,
         },
       });
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   } catch (error) {
-    res.status(500).end();
+    return res.status(500).end();
     return error;
   }
 });
 
 router.patch("/user/:id", async (req, res) => {
-  console.log(req.body);
   const id = req.params.id;
   const { email, first_name, last_name, age, gender } = req.body;
   try {
@@ -55,7 +54,7 @@ router.patch("/user/:id", async (req, res) => {
       where: { id: id },
     });
     if (!userAlreadyExists) {
-      res.status(200).send("Usuário não Cadastrado");
+      return res.status(200).send("Usuário não Cadastrado");
     } else {
       const user = await prisma.user.update({
         data: {
@@ -83,10 +82,10 @@ router.patch("/user/:id", async (req, res) => {
           profiles: true,
         },
       });
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   } catch (error) {
-    res.status(500).end();
+    return res.status(500).end();
     return error;
   }
 });
@@ -98,7 +97,7 @@ router.post("/user/delete/:id", async (req, res) => {
       where: { id: id },
     });
     if (!userAlreadyExists) {
-      res.status(200).send("Usuário não Cadastrado");
+      return res.status(200).send("Usuário não Cadastrado");
     } else {
       const user = await prisma.user.update({
         data: {
@@ -106,7 +105,7 @@ router.post("/user/delete/:id", async (req, res) => {
         },
         where: { id: id },
       });
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   } catch (error) {
     res.status(500).end();

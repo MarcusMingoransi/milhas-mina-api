@@ -16,7 +16,7 @@ router.post("/profile/delete/:id", async (req, res) => {
       where: { id: id },
     });
     if (!profileAlreadyExists) {
-      res.status(200).send("Profile não Cadastrado");
+      return res.status(200).send("Profile não Cadastrado");
     } else {
       const profile = await prisma.profile.update({
         data: {
@@ -24,7 +24,7 @@ router.post("/profile/delete/:id", async (req, res) => {
         },
         where: { id: id },
       });
-      res.status(200).json(profile);
+      return res.status(200).json(profile);
     }
   } catch (error) {
     res.status(500).end();
