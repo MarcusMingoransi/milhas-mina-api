@@ -12,7 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "4.8.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/node": "^18.11.18",
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "dotenv": "^16.0.3",
     "dotenv-safe": "^8.2.0",

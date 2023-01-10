@@ -1,3 +1,2 @@
-const EXPIRE_TOKEN = 300;
-
-module.exports = { EXPIRE_TOKEN };
+export const EXPIRE_TOKEN = 300;
+export const SALT_ROUNDS = 10;
