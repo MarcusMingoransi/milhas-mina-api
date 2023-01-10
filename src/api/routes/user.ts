@@ -5,7 +5,15 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 router.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      role: true,
+    },
+  });
   return res.status(200).json(users);
 });
 
