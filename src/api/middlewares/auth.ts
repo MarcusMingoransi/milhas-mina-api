@@ -14,8 +14,6 @@ const verifyJWT = async (req, res, next) => {
         .json({ auth: false, message: "Failed to authenticate token." });
     }
 
-    // se tudo estiver ok, salva no request para uso posterior
-    req.userId = decoded.id;
     next();
   });
 };

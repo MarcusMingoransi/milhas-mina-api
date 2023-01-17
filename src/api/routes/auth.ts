@@ -84,6 +84,10 @@ router.post("/login", async (req, res) => {
     select: {
       id: true,
       password: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      role: true,
     },
   });
 
@@ -101,7 +105,10 @@ router.post("/login", async (req, res) => {
           expiresIn: EXPIRE_TOKEN,
         }
       );
-      return res.status(200).json({ auth: true, token: token });
+      const { password, ...rest } = userAlreadyExists;
+      return res
+        .status(200)
+        .json({ ...rest, token: token, expires_in: EXPIRE_TOKEN });
     }
     return res.status(500).json({ message: "Senha Inválida" });
   }
