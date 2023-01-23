@@ -12,12 +12,14 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
   const { email, password, first_name, last_name, age, gender } = req.body;
+  if (!email || !password)
+    return res.status(403).send({ message: "Dados Inválidos!" });
   try {
     const userAlreadyExists = await prisma.user.findUnique({
       where: { email: email },
     });
     if (userAlreadyExists) {
-      return res.status(200).send({ message: "Usuário já Cadastrado" });
+      return res.status(403).send({ message: "Usuário já Cadastrado" });
     } else {
       const hashedPassword = await encryptPassword(String(password));
       const user = await prisma.user.create({
